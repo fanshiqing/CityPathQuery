@@ -13,9 +13,6 @@ import models.query.Query;
  */
 public abstract class User {
 	
-	
-	
-	
 	/**
 	 * 该方法向服务器提交一个查询请求
 	 * @param query

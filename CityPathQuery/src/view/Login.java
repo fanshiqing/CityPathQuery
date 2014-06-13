@@ -17,22 +17,22 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import client.Client;
 
-
 public class Login {
 
 	private JFrame frame;
-	private JTextField jtfUserName;
-	private JTextField jtfPasswd;
+	private JTextField jtfUserName;				// 用户名
+	private JPasswordField jpfPasswd;			// 密码
 	
 	private static String userNameTip = "请输入用户名";
-	private static String passwdTip = "请输入密码";
+	private static String passwdTip = "      ";	// 6个空格
 	
-	private String userName;	// 用户名
-	private String passwd;		// 密码
+	private String userName;					// 用户名
+	private String password;						// 密码
 
 	/**
 	 * Launch the application.
@@ -66,17 +66,18 @@ public class Login {
 		frame.setBounds(100, 100, 400, 280);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
-		frame.setLocationRelativeTo(null);	// 输入框中间显示
+		frame.setLocationRelativeTo(null);					// 输入框中间显示
+		frame.setTitle("城市路径查询及建议系统——SE_TEAM22");	// 设置登录界面标题
 		
 		jtfUserName = new JTextField();
 		jtfUserName.setBounds(159, 83, 135, 28);
 		frame.getContentPane().add(jtfUserName);
 		jtfUserName.setColumns(10);
 		
-		jtfPasswd = new JTextField();
-		jtfPasswd.setColumns(10);
-		jtfPasswd.setBounds(159, 121, 135, 28);
-		frame.getContentPane().add(jtfPasswd);
+		jpfPasswd = new JPasswordField();
+		jpfPasswd.setColumns(10);
+		jpfPasswd.setBounds(159, 121, 135, 28);
+		frame.getContentPane().add(jpfPasswd);
 		
 		JLabel label = new JLabel("\u7528\u6237\u540D\uFF1A");
 		label.setFont(new Font("宋体", Font.PLAIN, 15));
@@ -122,21 +123,25 @@ public class Login {
 			}
 		});
 		
-		jtfPasswd.addFocusListener(new FocusListener()
+		jpfPasswd.addFocusListener(new FocusListener()
 		{
 			public void focusGained(FocusEvent e)	// 获取焦点时
 			{
-				jtfPasswd.setText("");
+				jpfPasswd.setText("");
 			}
 			public void focusLost(FocusEvent e)		// 焦点失去时
 			{
-				if(jtfPasswd.getText().trim().length() == 0)
-					jtfPasswd.setText(passwdTip);
+				// Do nothing
+				//if(new String(jpfPasswd.getPassword()).length() == 0)
+				//	jpfPasswd.setText(passwdTip);	// 6个空格
 			}
 		});
 		
-		// 登录按钮、取消按钮添加监听事件
+		/**
+		 *  登录按钮、取消按钮添加监听事件
+		 */
 		jbtLogin.addActionListener(new LoginListener());
+		jbtCancle.addActionListener(new CancleListener());
 	}
 	
 	/**
@@ -151,8 +156,8 @@ public class Login {
 	 * 返回用户输入的密码
 	 * @return
 	 */
-	public String getPasswd() {
-		return passwd;
+	public String getPassword() {
+		return password;
 	}
 	
 	/**
@@ -163,27 +168,47 @@ public class Login {
 	private class LoginListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			userName = jtfUserName.getText().trim();
-			passwd = jtfPasswd.getText().trim();
+			password = new String(jpfPasswd.getPassword());
 			if(userName.equals(userNameTip) || userName.equals("")) {
-				JOptionPane.showMessageDialog(null, "用户名不能为空！");
+				JOptionPane.showMessageDialog(null, "用户名不能为空!", "友情提醒", JOptionPane.WARNING_MESSAGE);
 				return ;
 			}
-			if(passwd.equals(passwdTip) || passwd.equals("")) {
-				JOptionPane.showMessageDialog(null, "密码不能为空！");
+			if(password.equals(passwdTip) || password.equals("")) {
+				JOptionPane.showMessageDialog(null, "密码不能为空！", "友情提醒", JOptionPane.WARNING_MESSAGE);
 				return ;
 			}
 			else {
-				System.out.println("用户名、密码均不为空...");
-				// 建立到服务器的TCP连接
-				Client client = new Client();
-//				if(client.connToServer())
-//					System.out.println("成功建立到服务器的TCP连接...");
-//				else
-//					System.out.println("到服务器的连接失败...");
-				
-				// 向服务器发送用户名、密码以检查有效性
+				Client.sendLoginRequest(userName, password);				// 向server发送用户名和密码已检验登陆身份
+				Client.resolveLoginResponse();
 				return ;
 			}
 		}
 	}
+	
+	/**
+	 * 内部类：取消登录按钮的监听事件
+	 * @author FanShiqing
+	 *
+	 */
+	private class CancleListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			int m = JOptionPane.showConfirmDialog(null, "您确定要退出登录系统吗？", "消息", JOptionPane.YES_NO_OPTION);
+			if(m == JOptionPane.YES_OPTION) {	// 确定退出登录系统，则首先向server发送取消登录消息，然后关闭到server的socket连接，释放资源
+				Client.sendLoginCancleMsg();
+				Client.closeConnection();
+				System.out.println("成功退出登录系统");
+				System.exit(0);  				// 退出登录系统
+			}
+		}
+	}
 }
+
+
+
+
+
+
+
+
+
+
