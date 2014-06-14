@@ -3,6 +3,7 @@ package client;
 import java.awt.EventQueue;
 
 import view.Login;
+import view.Welcome;
 
 /**
  * 客户端程序执行入口
@@ -12,14 +13,6 @@ import view.Login;
 public class RunClient {
 	
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					new Login();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		new Welcome();
 	}
 }

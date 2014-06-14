@@ -21,6 +21,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import client.Client;
+import client.CommProtocol;
 
 public class Login {
 
@@ -32,7 +33,7 @@ public class Login {
 	private static String passwdTip = "      ";	// 6个空格
 	
 	private String userName;					// 用户名
-	private String password;						// 密码
+	private String password;					// 密码
 
 	/**
 	 * Launch the application.
@@ -64,7 +65,13 @@ public class Login {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 400, 280);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		/*
+		 *	设置窗口的关闭行为
+		 * 	EXIT_ON_CLOSE设置会导致关闭子窗口时父亲窗口同时关闭
+		 *  所以改用DISPOSE_ON_CLOSE
+		 */
+		//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);		
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);   
 		frame.getContentPane().setLayout(null);
 		frame.setLocationRelativeTo(null);					// 输入框中间显示
 		frame.setTitle("城市路径查询及建议系统——SE_TEAM22");	// 设置登录界面标题
@@ -145,6 +152,12 @@ public class Login {
 	}
 	
 	/**
+	 * 关闭登录窗口
+	 */
+	private void closeFrame() {
+		frame.setVisible(false);
+	}
+	/**
 	 * 返回用户输入的用户名
 	 * @return userName
 	 */
@@ -161,11 +174,22 @@ public class Login {
 	}
 	
 	/**
+	 * 验证用户名、密码成功后，登录成功，跳转到主界面
+	 * 
+	 */
+	private void landOn() {
+		Query queryFrame = new Query(this.userName);
+		queryFrame.setVisible(true);				// 设置查询窗口可见
+		
+		frame.setVisible(false);					// 设置本窗口不可见
+		Welcome.closeFrame(); 						// 关闭系统欢迎界面
+	}
+	/**
 	 * 内部类：登录按钮的监听事件
 	 * @author FanShiqing
 	 *
 	 */
-	private class LoginListener implements ActionListener {
+	private class LoginListener implements ActionListener, CommProtocol {
 		public void actionPerformed(ActionEvent e) {
 			userName = jtfUserName.getText().trim();
 			password = new String(jpfPasswd.getPassword());
@@ -179,7 +203,9 @@ public class Login {
 			}
 			else {
 				Client.sendLoginRequest(userName, password);				// 向server发送用户名和密码已检验登陆身份
-				Client.resolveLoginResponse();
+				if(Client.resolveLoginResponse() == LOGIN_SUCCESS) {
+					landOn();
+				}
 				return ;
 			}
 		}
@@ -195,9 +221,8 @@ public class Login {
 			int m = JOptionPane.showConfirmDialog(null, "您确定要退出登录系统吗？", "消息", JOptionPane.YES_NO_OPTION);
 			if(m == JOptionPane.YES_OPTION) {	// 确定退出登录系统，则首先向server发送取消登录消息，然后关闭到server的socket连接，释放资源
 				Client.sendLoginCancleMsg();
-				Client.closeConnection();
-				System.out.println("成功退出登录系统");
-				System.exit(0);  				// 退出登录系统
+				Client.closeConnection();	
+				closeFrame(); 					// 关闭登录窗口
 			}
 		}
 	}
