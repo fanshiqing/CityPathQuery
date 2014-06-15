@@ -3,23 +3,24 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-//import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-
-import java.awt.Font;
-
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JTextArea;
-
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+//import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import models.mapItems.Map;
+import util.TranslateMapFile;
 
 
 public class Query extends JFrame {
@@ -31,6 +32,11 @@ public class Query extends JFrame {
 	private JTextField textField_3;
 	private JTextField textField_4;
 	private JTextField textField_5;
+	
+	private JButton jbtQuery;		// 查询按钮
+	private JButton jbtReset;		// 重置按钮
+	private JButton jbtExit;		// 退出按钮
+	private JButton jbtAbout;		// 关于按钮
 	
 	private String userName;				// 登录的用户名
 
@@ -89,18 +95,18 @@ public class Query extends JFrame {
 		panel_4.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
 		
 		//JButton button_2 = new JButton("\u767B\u9646");
-		JButton button_2 = new JButton("退出");
-		button_2.setHorizontalAlignment(SwingConstants.CENTER);
-		button_2.setPreferredSize(new Dimension(60,21));
-		button_2.setFont(new Font("Dialog", Font.BOLD, 12));
-		panel_4.add(button_2);
+		jbtExit= new JButton("退出");
+		jbtExit.setHorizontalAlignment(SwingConstants.CENTER);
+		jbtExit.setPreferredSize(new Dimension(60,21));
+		jbtExit.setFont(new Font("Dialog", Font.BOLD, 12));
+		panel_4.add(jbtExit);
 		
 		//JButton button_3 = new JButton("\u6CE8\u518C");
-		JButton button_3 = new JButton("关于");
-		button_3.setHorizontalAlignment(SwingConstants.CENTER);
-		button_3.setPreferredSize(new Dimension(60,21));
-		button_3.setFont(new Font("Dialog", Font.BOLD, 12));
-		panel_4.add(button_3);
+		jbtAbout = new JButton("关于");
+		jbtAbout.setHorizontalAlignment(SwingConstants.CENTER);
+		jbtAbout.setPreferredSize(new Dimension(60,21));
+		jbtAbout.setFont(new Font("Dialog", Font.BOLD, 12));
+		panel_4.add(jbtAbout);
 		
 		JPanel panel_15 = new JPanel();
 		panel_15.setPreferredSize(new Dimension(50,20));
@@ -195,24 +201,43 @@ public class Query extends JFrame {
 		panel_13.add(textField_5);
 		
 		//JButton button = new JButton("\u67E5\u8BE2");
-		JButton button = new JButton("查询");
-		button.setFont(new Font("宋体", Font.BOLD, 15));
-		button.setBounds(42, 217, 70, 23);
-		panel_13.add(button);
+		jbtQuery = new JButton("查询");
+		jbtQuery.setFont(new Font("宋体", Font.BOLD, 15));
+		jbtQuery.setBounds(42, 217, 70, 23);
+		panel_13.add(jbtQuery);
 		
 		//JButton button_1 = new JButton("\u91CD\u7F6E");
-		JButton button_1 = new JButton("重置");
-		button_1.setFont(new Font("宋体", Font.BOLD, 15));
-		button_1.setBounds(121, 217, 70, 23);
-		panel_13.add(button_1);
+		jbtReset = new JButton("重置");
+		jbtReset.setFont(new Font("宋体", Font.BOLD, 15));
+		jbtReset.setBounds(121, 217, 70, 23);
+		panel_13.add(jbtReset);
 		
 		JPanel panel_14 = new JPanel();
 		contentPane.add(panel_14, BorderLayout.EAST);
 		
-		JTextArea textArea = new JTextArea();
-		contentPane.add(textArea, BorderLayout.CENTER);
+//		JTextArea textArea = new JTextArea();
+//		contentPane.add(textArea, BorderLayout.CENTER);
+		Map map = TranslateMapFile.translateMap();
+		MapPanel mapPanel = new MapPanel(map);
+		mapPanel.setSize(1024, 768);
+		JScrollPane temp = new JScrollPane();
+		temp.setViewportView(mapPanel);
+		temp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		temp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		
+		//contentPane.add(mapPanel, BorderLayout.CENTER);
+		contentPane.add(temp, BorderLayout.CENTER);
+		
 		
 		this.setLocationRelativeTo(null); 					// 设置界面的相对位置
+		
+		/*
+		 * 为各个按钮添加监听事件
+		 */
+		jbtExit.addActionListener(new ExitListener());
+		jbtAbout.addActionListener(new AboutListener());
+		jbtQuery.addActionListener(new QueryListener());
+		jbtReset.addActionListener(new ResetListener());
 	}
 	
 	/**
@@ -223,6 +248,58 @@ public class Query extends JFrame {
 		this.userName = userName;
 	}
 	
+	/**
+	 * 内部类
+	 * 实现点击退出按钮时的行为：给出确认退出对话框
+	 * @author FanShiqing
+	 *
+	 */
+	private class ExitListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			int result = JOptionPane.showConfirmDialog(null, "确认退出本系统吗？", "消息", JOptionPane.YES_NO_OPTION);
+			if(result == JOptionPane.YES_OPTION) {
+				System.exit(0);					// 退出系统
+			}
+		}
+	}
+	
+	/**
+	 * 内部类
+	 * 实现点击关于按钮时的行为：给出关于本系统的一些信息
+	 * @author FanShiqing
+	 *
+	 */
+	private class AboutListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			String message = "System Developer:  樊士庆，董剑峰，高兴坤，王伟懿\n"
+	 				+ "System Version    : Version 1.1\n"
+	 				+ "Contact  us      :   Nanjing University, Xianlin Campus,\n"
+	 				+ "       163 Xianlin Avenue, Qixia District, Nanjing 210023, China\n"
+	 				+ "E-mail Address   : sqfan6@gmail.com";
+			JOptionPane.showMessageDialog(null, message, "关于本系统", JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+	
+	/**
+	 * 内部类
+	 * 实现点击查询按钮时的行为：向server发出路径查询请求
+	 * @author FanShiqing
+	 */
+	private class QueryListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			
+		}
+	}
+	/**
+	 * 内部类
+	 * 实现点击重置按钮时的行为：重置各个文本框
+	 * @author FanShiqing
+	 */
+	private class ResetListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			
+		}
+	}
 }
 
 

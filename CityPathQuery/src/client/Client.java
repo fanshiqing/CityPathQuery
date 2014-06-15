@@ -7,6 +7,10 @@ import java.net.Socket;
 
 import javax.swing.JOptionPane;
 
+import models.mapItems.AbstractMap;
+import models.mapItems.Map;
+import util.User;
+
 /**
  * 客户端程序
  * 自定义的接口CommType给出了客户端--服务器之间通信的消息类型
@@ -20,9 +24,17 @@ public class Client implements CommProtocol{
 	private static ObjectInputStream fromServer;				// 接收来自服务器的对象
 	
 	private static Client client;
+	private static User user;
+	private static Map map;
+	private static AbstractMap absMap;
+	
 	
 	static {
 		client = new Client();
+	}
+	
+	public static void initialize() {
+		
 	}
 	
 	/**
@@ -39,7 +51,7 @@ public class Client implements CommProtocol{
 	 */
 	public Client() {
 		try {
-			socket = new Socket("localhost", 8000);		// 创建连接到server的套接字
+			socket = new Socket("114.212.134.143", 8000);		// 创建连接到server的套接字
 			toServer = new ObjectOutputStream(socket.getOutputStream());
 			//toServer.flush();
 			fromServer = new ObjectInputStream(socket.getInputStream());
@@ -51,6 +63,8 @@ public class Client implements CommProtocol{
 		// Connect to server successfully
 		System.out.println("Connect to server successfully!\n");
 	}
+	
+	
 	
 	/**
 	 * 获取向server发送对象的输出流对象

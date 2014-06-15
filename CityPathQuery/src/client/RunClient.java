@@ -1,8 +1,6 @@
 package client;
 
-import java.awt.EventQueue;
 
-import view.Login;
 import view.Welcome;
 
 /**
