@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 
 import models.mapItems.AbstractMap;
 import models.mapItems.Map;
+import models.query.Advice;
 import models.query.Query;
 import util.TranslateMapFile;
 import util.User;
@@ -338,6 +339,7 @@ public class Client implements CommProtocol{
 			/**
 			 * 接受server返回结果,并将返回的结果的类型转换成ArrayList<Query>类型
 			 */
+			@SuppressWarnings("unchecked")
 			Vector<Vector<Object>> vector = (Vector<Vector<Object>>)fromServer.readObject();
 			for(int i = 0;i < vector.size();i ++) {
 				Vector<Object> t = vector.get(i);
@@ -357,11 +359,193 @@ public class Client implements CommProtocol{
 		
 		return result;
 	}
+	
+	/**
+	 * 方法getQueriesListByUserName(String userName)的测试函数
+	 */
+	private void test_getQueriesListByUserName() {
+		ArrayList<Query> result = Client.getQueriesListByUserName("fsq");
+		System.out.println(result.size());
+		
+		for(int i = 0;i < result.size();i ++) {
+			Query query = result.get(i);
+			System.out.println("user name: " + query.getUserName()
+							   + ", from: " + query.getStartLocationName()
+							   + ", to: " + query.getEndLocationName()
+							   + ", pass: " + query.getMidLocationName()
+							   + ", queryTime: " + query.getQueryTime());
+		}
+	}
+	
+	/**
+	 * 根据路段ID查询其所获的平均分数
+	 * @param pathUnitID
+	 * @return 
+	 */
+	public static double getGradeByPathUnitID(int pathUnitID) {
+		double result = -1.0;
+		try {
+			/**
+			 * 依次向server发送握手信号与路段ID
+			 */
+			toServer.writeObject(String.valueOf(GRADE_GET_GRADE_BY_PATHUNITID));
+			toServer.writeObject(String.valueOf(pathUnitID));		
+		}
+		catch(IOException ex) {
+			ex.printStackTrace();
+		}
+		try {
+			/**
+			 * 接受服务器返回的处理结果
+			 */
+			result = ((Double)fromServer.readObject()).doubleValue();
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 当用户给某个路段评分时，调用本函数请求server更新该路段的评分
+	 * @param pathUnitID 评价的路段ID
+	 * @param grade 本次打分
+	 * @return server端更新成功时返回true，否则返回false
+	 */
+	public static boolean updateGradeByPathUnitID(int pathUnitID, double grade) {
+		try {
+			/**
+			 * 依次向server发送握手信号与路段ID、本次评分
+			 */
+			toServer.writeObject(String.valueOf(GRADE_UPDATE_GRADE_BY_PATHUNITID));
+			toServer.writeObject(String.valueOf(pathUnitID));
+			toServer.writeObject(String.valueOf(grade));
+		}
+		catch(IOException ex) {
+			ex.printStackTrace();
+		}
+		
+		try {
+			/**
+			 * 接受服务器返回的处理结果
+			 */
+			if(Integer.parseInt((String)fromServer.readObject()) == GRADE_UPDATE_GRADE_SUCCESS) {
+				return true;
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * 根据路段ID查询该路段上的所有评论
+	 * @param pathUnitID
+	 * @return
+	 */
+	public static ArrayList<Advice> getCommentsByPathUnitID(int pathUnitID) {
+		ArrayList<Advice> result = new ArrayList<Advice>();
+		try {
+			/**
+			 * 依次向server发送握手信号与路段ID
+			 */
+			toServer.writeObject(String.valueOf(COMMENT_QUERY_BY_PATHUNITID));
+			toServer.writeObject(String.valueOf(pathUnitID));
+		}
+		catch(IOException ex) {
+			ex.printStackTrace();
+		}
+		try {
+			/**
+			 * 接收服务器返回的处理结果
+			 */
+			@SuppressWarnings("unchecked")
+			Vector<Vector<Object>> vector = (Vector<Vector<Object>>)fromServer.readObject();
+			for(int i = 0;i < vector.size();i ++) {
+				Vector<Object> t = vector.get(i);
+				
+				// 提取各个字段
+				int commentID = ((Integer)t.get(0)).intValue();
+				String userName = (String)t.get(1);
+				int pathUnitID_temp = ((Integer)t.get(2)).intValue();
+				String commentTime = (String)t.get(3);
+				int likedTimes = ((Integer)t.get(4)).intValue();
+				String contentText = (String)t.get(5);
+				System.out.println("commentID: " + commentID + ", userName: " + userName + ", pathUnitID: " + pathUnitID_temp
+									+ ", commentTime: " + commentTime + ", likedTimes: " + likedTimes + ", contentText: " + contentText);
+				Advice advice = new Advice(commentID, userName, pathUnitID_temp, commentTime, likedTimes, contentText);
+				result.add(advice);
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 根据用户名查询其历史评论列表
+	 * @param userName
+	 * @return
+	 */
+	public static ArrayList<Advice> getCommentsByUserName(String userName) {
+		ArrayList<Advice> result = new ArrayList<Advice>();
+		try {
+			/**
+			 * 依次向server发送握手信号与用户名
+			 */
+			toServer.writeObject(String.valueOf(COMMENT_QUERY_BY_USERNAME));
+			toServer.writeObject(userName);
+		}
+		catch(IOException ex) {
+			ex.printStackTrace();
+		}
+		try {
+			/**
+			 * 接收服务器返回的处理结果
+			 */
+			@SuppressWarnings("unchecked")
+			Vector<Vector<Object>> vector = (Vector<Vector<Object>>)fromServer.readObject();
+			for(int i = 0;i < vector.size();i ++) {
+				Vector<Object> t = vector.get(i);
+				
+				// 提取各个字段
+				int commentID = ((Integer)t.get(0)).intValue();
+				String userName_temp = (String)t.get(1);
+				int pathUnitID = ((Integer)t.get(2)).intValue();
+				String commentTime = (String)t.get(3);
+				int likedTimes = ((Integer)t.get(4)).intValue();
+				String contentText = (String)t.get(5);
+				System.out.println("commentID: " + commentID + ", userName: " + userName_temp + ", pathUnitID: " + pathUnitID
+									+ ", commentTime: " + commentTime + ", likedTimes: " + likedTimes + ", contentText: " + contentText);
+				Advice advice = new Advice(commentID, userName_temp, pathUnitID, commentTime, likedTimes, contentText);
+				result.add(advice);
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 本类各个方法的测试函数调用入口，仅用户本类各个方法的正确性测试
+	 */
+	public void test() {
+		test_getQueriesListByUserName();
+	}
 	/**
 	 * 用于本类各个方法的测试
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		Client.updateGradeByPathUnitID(3, 4.4);
+		/*
 		ArrayList<Query> result = Client.getQueriesListByUserName("fsq");
 		System.out.println(result.size());
 		
@@ -374,6 +558,7 @@ public class Client implements CommProtocol{
 							   + ", queryTime: " + query.getQueryTime());
 		}
 		return ;
+		*/
 	}
 	
 }

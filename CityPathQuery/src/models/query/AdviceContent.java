@@ -13,5 +13,18 @@ import models.mapItems.Location;
 public class AdviceContent {
 	String text;
 	ArrayList<URL> videos;
-	ArrayList<URL> pictures;	
+	ArrayList<URL> pictures;
+	
+	public AdviceContent(String text) {
+		// TODO Auto-generated constructor stub
+		this.text = text;
+		videos = new ArrayList<URL>();
+		pictures = new ArrayList<URL>();
+	}
+
+	public String getText() {
+		return text;
+	}
+	
+	
 }
