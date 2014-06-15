@@ -285,7 +285,7 @@ public class Query extends JFrame {
 	private class QueryListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			//Query
-			String locNameStart = textField_1.getText();
+			String locNameStart = textField_1.getText().trim();
 			String locNameEnd = textField_2.getText();
 			String locNameMid = textField_3.getText();
 			//AbstractMap absMap = Client.getAbstractMap();
@@ -299,7 +299,10 @@ public class Query extends JFrame {
 			}
 			else {
 				//向服务器发送历史数据
-				
+				System.out.println("user : " + Client.getUser().getUserName() + "  start :" + locNameStart + "  end :" + locNameEnd);
+				if (Client.insertNewQueryToServer(Client.getUser().getUserName(), locNameStart, locNameEnd, locNameMid)) {
+					System.out.println("向服务器发送查询历史成功");
+				}	
 				mapPanel.paintPath(query.getResultPath());
 			}
 			

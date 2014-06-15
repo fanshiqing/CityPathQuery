@@ -4,11 +4,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
 import models.mapItems.AbstractMap;
 import models.mapItems.Map;
+import models.query.Query;
 import util.TranslateMapFile;
 import util.User;
 
@@ -278,14 +281,108 @@ public class Client implements CommProtocol{
 		}
 			
 	}
+	
 	/**
-	 * for test only
+	 * 向数据库插入新的评论记录
+	 * @param userName	用户名
+	 * @param startLocationName 起始地点名字
+	 * @param endLocationName	终止地点名字
+	 * @param midLocationName   途径地点名字
+	 * @return 当向server更新查询历史成功时返回true，否则返回false
+	 */
+	public static boolean insertNewQueryToServer(String userName, String startLocationName, String endLocationName, String midLocationName) {
+		int result = -1;
+		assert(userName != null);
+		try {
+			toServer.writeObject(String.valueOf(QUERY_ADD_NEW_QUERY));
+			toServer.writeObject(userName);
+			toServer.writeObject(startLocationName);
+			toServer.writeObject(endLocationName);
+			toServer.writeObject(midLocationName);
+		}
+		catch(IOException ex) {
+			ex.printStackTrace();
+		}
+		/**
+		 * 接受server的响应
+		 */
+		try {
+			result = Integer.parseInt((String)fromServer.readObject());
+			if(result == QUERY_ADD_NEW_QUERY_SUCCESS) {				// 更新查询记录成功
+				return true;
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}	
+		
+		return false;			// 更新查询记录失败			
+	}
+	
+	/**
+	 * 根据用户名查询其查询历史
+	 * @param userName
+	 * @return 一条条查询构成的ArryList
+	 */
+	public static ArrayList<Query> getQueriesListByUserName(String userName) {
+		ArrayList<Query> result = new ArrayList<Query>();
+		try {
+			toServer.writeObject(String.valueOf(QUERY_SELECT_QUERY_LIST_BY_USERNAME));
+			toServer.writeObject(userName);
+		}
+		catch(IOException ex) {
+			ex.printStackTrace();
+		}
+		
+		try {
+			/**
+			 * 接受server返回结果,并将返回的结果的类型转换成ArrayList<Query>类型
+			 */
+			Vector<Vector<Object>> vector = (Vector<Vector<Object>>)fromServer.readObject();
+			for(int i = 0;i < vector.size();i ++) {
+				Vector<Object> t = vector.get(i);
+				System.out.println("userName: " + t.get(1) + ", from: " + t.get(2) + ", to: " + t.get(3) 
+									+ ", pass: " + t.get(4) + ", query time: " + t.get(6));
+				Query query = new Query((String)t.get(1),			// userName
+										(String)t.get(2),			// start location name
+										(String)t.get(3),			// end location name
+										(String)t.get(4),			// mid location namem
+										(String)t.get(6));			// query time(history)
+				result.add(query);
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		
+		return result;
+	}
+	/**
+	 * 用于本类各个方法的测试
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Client client = new Client();
+		ArrayList<Query> result = Client.getQueriesListByUserName("fsq");
+		System.out.println(result.size());
 		
+		for(int i = 0;i < result.size();i ++) {
+			Query query = result.get(i);
+			System.out.println("user name: " + query.getUserName()
+							   + ", from: " + query.getStartLocationName()
+							   + ", to: " + query.getEndLocationName()
+							   + ", pass: " + query.getMidLocationName()
+							   + ", queryTime: " + query.getQueryTime());
+		}
 		return ;
 	}
 	
 }
+
+
+
+
+
+
+
+
+

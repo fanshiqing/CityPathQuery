@@ -54,4 +54,14 @@ public interface CommProtocol {
 	public static final int GRADE_GET_GRADE_BY_PATHUNITID = 31;		// 根据路段ID取该路段的平均得分
 	public static final int GRADE_UPDATE_GRADE_BY_PATHUNITID = 32;	// 用户对路段打分后更新数据库
 	
+	/**
+	 * db_queries表的操作协议
+	 * 
+	 */
+	public static final int QUERY_ADD_NEW_QUERY = 41;				// client提交新的查询记录
+	public static final int QUERY_ADD_NEW_QUERY_SUCCESS = 42;		// server端更新查询历史成功
+	public static final int QUERY_ADD_NEW_QUERY_FAILED = 43;		// server端更新查询历史成功
+	public static final int QUERY_SELECT_QUERY_LIST_BY_USERNAME = 44;		// server端更新查询历史成功
+	
+	
 }

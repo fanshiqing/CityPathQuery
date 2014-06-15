@@ -1,10 +1,8 @@
 package models.query;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 import client.Client;
-import models.mapItems.Coordinate;
 import models.mapItems.Path;
 
 /**
@@ -15,6 +13,7 @@ import models.mapItems.Path;
 public class Query {
 	private int ID;
 	private String userName;
+	
 	private String startLocationName;
 	private String midLocationName;
 	private String endLocationName;
@@ -22,15 +21,78 @@ public class Query {
 	
 	private double scoreLimit;	//查询路径分数限制，取值为0到5
 	
-	
-	
 	private ArrayList<Path> resultPath;
 	
-	public Query(String startLoc, String midLoc, String endLoc, String userName, String queryTime) {
-		this.startLocationName = startLoc;
-		this.endLocationName = endLoc;
-		this.midLocationName = midLoc;
+	public int getID() {
+		return ID;
+	}
+
+	public void setID(int iD) {
+		ID = iD;
+	}
+
+	public String getUserName() {
+		return userName;
+	}
+
+	public void setUserName(String userName) {
 		this.userName = userName;
+	}
+
+	public String getStartLocationName() {
+		return startLocationName;
+	}
+
+	public void setStartLocationName(String startLocationName) {
+		this.startLocationName = startLocationName;
+	}
+
+	public String getMidLocationName() {
+		return midLocationName;
+	}
+
+	public void setMidLocationName(String midLocationName) {
+		this.midLocationName = midLocationName;
+	}
+
+	public String getEndLocationName() {
+		return endLocationName;
+	}
+
+	public void setEndLocationName(String endLocationName) {
+		this.endLocationName = endLocationName;
+	}
+
+	public String getQueryTime() {
+		return queryTime;
+	}
+
+	public void setQueryTime(String queryTime) {
+		this.queryTime = queryTime;
+	}
+
+	public double getScoreLimit() {
+		return scoreLimit;
+	}
+
+	public void setScoreLimit(double scoreLimit) {
+		this.scoreLimit = scoreLimit;
+	}
+
+	
+	/**
+	 * Query类构造函数
+	 * @param userName
+	 * @param startLocationName
+	 * @param endLocationName
+	 * @param midLocationName
+	 * @param queryTime
+	 */
+	public Query(String userName, String startLocationName, String endLocationName, String midLocationName, String queryTime) {
+		this.userName = userName;
+		this.startLocationName = startLocationName;
+		this.endLocationName = endLocationName;
+		this.midLocationName = midLocationName;
 		this.queryTime = queryTime;
 		resultPath = new ArrayList<Path>();
 	}
