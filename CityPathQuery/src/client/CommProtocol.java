@@ -47,6 +47,9 @@ public interface CommProtocol {
 	public static final int COMMENT_ADD_TEXT_COMMENT = 23;			// 添加文本类型的评论
 	public static final int COMMENT_ADD_PICTURE_COMMENT = 24;		// 添加图片类型的评论
 	public static final int COMMENT_ADD_VEDIO_COMMENT = 25;			// 添加视频类型的评论
+	public static final int COMMENT_ADD_SUCCESS = 26;				// server端成功添加新的评论
+	public static final int COMMENT_ADD_FAILED = 27;				// server端添加新的评论失败
+	
 	
 	/**
 	 * db_grades路径打分表的操作协议
@@ -65,5 +68,12 @@ public interface CommProtocol {
 	public static final int QUERY_ADD_NEW_QUERY_SUCCESS = 42;		// server端更新查询历史成功
 	public static final int QUERY_ADD_NEW_QUERY_FAILED = 43;		// server端更新查询历史成功
 	public static final int QUERY_SELECT_QUERY_LIST_BY_USERNAME = 44;		// server端更新查询历史成功
+	
+	
+	/**
+	 * 退出系统
+	 */
+	public static final int EXIT_SYSTEM_REQUEST = 51;				// 用户退出本体统
+	public static final int EXIT_SYSTEM_RESPONSE = 52;				// server返回给client的退出系统响应
 	
 }

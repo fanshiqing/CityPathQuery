@@ -33,6 +33,10 @@ public class Client implements CommProtocol{
 	private static Map map;
 	private static AbstractMap abstractMap;
 	
+	static {
+		client = new Client();
+	}
+	
 	public static void clientInit(String userName) {
 		map = TranslateMapFile.translateMap();
 		abstractMap = new AbstractMap(map);
@@ -66,11 +70,6 @@ public class Client implements CommProtocol{
 		return abstractMap;
 	}
 	
-	
-	static {
-		client = new Client();
-	}
-	
 	/**
 	 * 返回一个客户端类的示例
 	 * 一个运行的客户端的所有操作均共享本类中定义的static类型的client对象
@@ -85,7 +84,7 @@ public class Client implements CommProtocol{
 	 */
 	public Client() {
 		try {
-			socket = new Socket("114.212.134.143", 8000);		// 创建连接到server的套接字
+			socket = new Socket("172.26.18.105", 8000);		// 创建连接到server的套接字
 			toServer = new ObjectOutputStream(socket.getOutputStream());
 			//toServer.flush();
 			fromServer = new ObjectInputStream(socket.getInputStream());
@@ -110,6 +109,14 @@ public class Client implements CommProtocol{
 	 * @return 成功关闭socket时返回true，否则返回false
 	 */
 	public static boolean closeConnection() {
+		
+		/**
+		 * 注意：如果手动释放toServer,fromServer的资源，那么会引起server
+		 *      的socket reset异常，与C语言不同，我们可以放心把垃圾回收、资源
+		 *      回收工作留给Java的垃圾回收机制，所以这里注释掉了手动释放资源的代码
+		 *      
+		 */
+		/*
 		try {
 			// 关闭到服务器的TCP连接资源
 			toServer.close();
@@ -121,6 +128,37 @@ public class Client implements CommProtocol{
 		catch(IOException ex) {
 			ex.printStackTrace();
 			return false;
+		}
+		*/
+		return true;
+	}
+	
+	/**
+	 * 客户端在退出系统时调用本函数告知server
+	 */
+	public static void exitSystem() {
+		try {
+			/**
+			 * 向srever发送退出消息
+			 */
+			toServer.writeObject(String.valueOf(EXIT_SYSTEM_REQUEST));
+		}
+		catch(IOException ex) {
+			ex.printStackTrace();
+		}
+		try {
+			/**
+			 * 从server读取响应消息
+			 */
+			fromServer.readObject();
+			for(int i = 0;i < 100000;i ++) {
+				/**
+				 * wait some time to close
+				 */
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 	
@@ -398,7 +436,7 @@ public class Client implements CommProtocol{
 			/**
 			 * 接受服务器返回的处理结果
 			 */
-			result = ((Double)fromServer.readObject()).doubleValue();
+			result = Double.parseDouble((String)fromServer.readObject());
 		}
 		catch(Exception ex) {
 			ex.printStackTrace();
@@ -534,6 +572,39 @@ public class Client implements CommProtocol{
 	}
 	
 	/**
+	 * 向server提交的新的[文本类型的]评论，server将会把新的评论插入数据库中，并返回操作执行结果
+	 * @param userName
+	 * @param pathUnitID
+	 * @param contentText
+	 * @return 当新的评论更新到数据库操作成功时返回true，否则返回false
+	 */
+	public static boolean insertNewTextComment(String userName, int pathUnitID, String contentText) {
+		try {
+			/**
+			 * 依次发送操作类型、用户名、评论的路段ID、文本类型的评论内容
+			 */
+			toServer.writeObject(String.valueOf(COMMENT_ADD_TEXT_COMMENT));
+			toServer.writeObject(userName);
+			toServer.writeObject(String.valueOf(pathUnitID));
+			toServer.writeObject(contentText);
+		}
+		catch(IOException ex) {
+			ex.printStackTrace();
+		}
+		
+		try {
+			if(Integer.parseInt((String)fromServer.readObject()) == COMMENT_ADD_SUCCESS) {
+				return true;
+			}
+		}
+		catch(Exception ex) {
+			ex.printStackTrace();
+		}
+		// 执行更新失败
+		return false;
+	}
+	
+	/**
 	 * 本类各个方法的测试函数调用入口，仅用户本类各个方法的正确性测试
 	 */
 	public void test() {
@@ -544,7 +615,8 @@ public class Client implements CommProtocol{
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Client.updateGradeByPathUnitID(3, 4.4);
+		if(Client.insertNewTextComment("fsq", 4, "this is my test comment!"))
+			System.out.println("add new comment successfully!");
 		/*
 		ArrayList<Query> result = Client.getQueriesListByUserName("fsq");
 		System.out.println(result.size());

@@ -327,8 +327,8 @@ public class Register extends JDialog {
 			if(m == JOptionPane.YES_OPTION) {	// 确定取消注册，则首先向server发送取消登录消息，然后关闭到server的socket连接，释放资源
 				Client.sendRegisterCancleMsg();
 				Client.closeConnection();
+				closeRegisterFrame();			// 关闭本注册窗口
 				System.out.println("成功取消注册新用户");
-				System.exit(0);  				// 退出登录系统
 			}
 		}
 	}

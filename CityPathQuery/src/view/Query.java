@@ -165,7 +165,7 @@ public class Query extends JFrame {
 		label_1.setBounds(25, 69, 70, 15);
 		panel_13.add(label_1);
 		
-		JLabel label_2 = new JLabel("途    径：");
+		JLabel label_2 = new JLabel("途    经：");
 		label_2.setFont(new Font("宋体", Font.PLAIN, 14));
 		label_2.setBounds(25, 106, 70, 15);
 		panel_13.add(label_2);
@@ -255,6 +255,11 @@ public class Query extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			int result = JOptionPane.showConfirmDialog(null, "确认退出本系统吗？", "消息", JOptionPane.YES_NO_OPTION);
 			if(result == JOptionPane.YES_OPTION) {
+				/**
+				 * 关系与server的TCP写入/输出流连接
+				 */
+				Client.closeConnection();
+				
 				System.exit(0);					// 退出系统
 			}
 		}
