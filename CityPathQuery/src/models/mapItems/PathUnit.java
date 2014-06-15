@@ -2,6 +2,7 @@ package models.mapItems;
 
 import java.util.ArrayList;
 
+import client.Client;
 import models.query.Advice;
 
 /**
@@ -24,10 +25,20 @@ public class PathUnit {
 		this.startPoint = startPoint;
 		this.endPoint = endPoint;
 		this.scoredTimes = 0;
-		this.averageScore = 0;
+		this.averageScore = -1;
 		this.advices = new ArrayList<Advice>();
 		this.ID = counter;
 		counter ++;
+	}
+	
+	/**
+	 * 从服务器获得最新的评分和评论信息
+	 */
+	public void update(){
+		this.averageScore = Client.getGradeByPathUnitID(ID);
+		
+		//更新评论
+		this.advices = Client.getCommentsByPathUnitID(ID);
 	}
 	
 	
@@ -39,6 +50,10 @@ public class PathUnit {
 		return startPoint.getDistance(endPoint);
 	}
 
+	public String getName() {
+		return "    子路段:" + ID;
+	}
+	
 
 	public Coordinate getStartPoint() {
 		return startPoint;
@@ -58,6 +73,21 @@ public class PathUnit {
 	public void setEndPoint(Coordinate endPoint) {
 		this.endPoint = endPoint;
 	}
+
+	public double getAverageScore() {
+		update();
+		return averageScore;
+	}
+
+	public ArrayList<Advice> getAdvices() {
+		update();
+		return advices;
+	}
+
+	public int getID() {
+		return ID;
+	}
+	
 	
 	
 }

@@ -15,7 +15,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
@@ -29,7 +31,7 @@ import util.TranslateMapFile;
 public class Query extends JFrame {
 
 	private JPanel contentPane;
-	private JTextField textField;
+	private InfoPanel textPane;
 	private JTextField textField_1;
 	private JTextField textField_2;
 	private JTextField textField_3;
@@ -135,9 +137,9 @@ public class Query extends JFrame {
 		JPanel panel_9 = new JPanel();
 		panel_5.add(panel_9, BorderLayout.SOUTH);
 		
-		textField = new JTextField();
-		panel_5.add(textField, BorderLayout.CENTER);
-		textField.setColumns(10);
+		textPane = new InfoPanel();
+		panel_5.add(textPane, BorderLayout.CENTER);
+		//textArea.setColumns(10);
 		
 		JPanel panel_10 = new JPanel();
 		panel_10.setPreferredSize(new Dimension(280,0));
@@ -255,9 +257,7 @@ public class Query extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			int result = JOptionPane.showConfirmDialog(null, "确认退出本系统吗？", "消息", JOptionPane.YES_NO_OPTION);
 			if(result == JOptionPane.YES_OPTION) {
-				/**
-				 * 关系与server的TCP写入/输出流连接
-				 */
+				
 				Client.closeConnection();
 				
 				System.exit(0);					// 退出系统
@@ -291,8 +291,8 @@ public class Query extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			//Query
 			String locNameStart = textField_1.getText().trim();
-			String locNameEnd = textField_2.getText();
-			String locNameMid = textField_3.getText();
+			String locNameEnd = textField_2.getText().trim();
+			String locNameMid = textField_3.getText().trim();
 			//AbstractMap absMap = Client.getAbstractMap();
 			
 			//Client.clientInit("user");
@@ -309,6 +309,9 @@ public class Query extends JFrame {
 					System.out.println("向服务器发送查询历史成功");
 				}	
 				mapPanel.paintPath(query.getResultPath());
+				textPane.setEditable(false);
+				textPane.clear();
+				textPane.printString(query.toString());
 			}
 			
 		}
@@ -322,6 +325,11 @@ public class Query extends JFrame {
 		public void actionPerformed(ActionEvent e) {
 			
 		}
+	}
+	
+	
+	private void printPathInfo() {
+		
 	}
 }
 

@@ -233,7 +233,12 @@ public class AbstractMap {
 		if (loc1 == null || loc2 == null) {
 			return null;
 		}
-		return findPath(loc1, loc2);
+		Path result = findPath(loc1, loc2);
+		if (result != null) {
+			result.setStartLocName(locName1);
+			result.setEndLocName(locName2);
+		}
+		return result;
 	}
 	
 }

@@ -110,6 +110,8 @@ public class Query {
 		Path resultPath1; //最终查询结果
 		Path resultPath2; //含midloc的查询结果
 		
+		System.out.println("start :" + startLocationName + "   end : " + endLocationName + "  mid:" + midLocationName);
+		
 		if (midLocationName.equals("")) {
 			resultPath1 = Client.getAbstractMap().findPath(startLocationName, endLocationName);
 			resultPath.add(resultPath1);
@@ -127,6 +129,23 @@ public class Query {
 			}
 		}		
 		return true;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer result = new StringBuffer();
+		if (queryTime == null) {
+			result.append("查询时间 ：当前\n");
+		}
+		else {
+			result.append("查询时间：" + queryTime + "\n");
+		}
+		for (Path p : getResultPath()) {
+			int i = resultPath.indexOf(p);
+			result.append("结果路径  " + i + ":\n");
+			result.append(p.toString());
+		}
+		return result.toString();
 	}
 	
 	public ArrayList<Path> getResultPath() {
