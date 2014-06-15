@@ -5,22 +5,9 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.AdjustmentEvent;
-import java.awt.event.AdjustmentListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.geom.Line2D;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
-import java.util.ArrayList;
 
+import java.awt.geom.Line2D;
+import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.event.ChangeEvent;
@@ -33,6 +20,8 @@ import models.mapItems.PathUnit;
 
 
 public class MapPanel extends JScrollPane {
+	
+	private static final long serialVersionUID = 1L;
 	private InnerPanel innerPanel;
 
 	
@@ -60,6 +49,11 @@ public class MapPanel extends JScrollPane {
 		innerPanel.paintPath(pathList);
 	}
 
+	public void paintPathUnit(PathUnit pathUnit) {
+		repaint();
+		innerPanel.paintPathUnit(pathUnit);
+	}
+	
 	@Override
 	protected void paintComponent(Graphics arg0) {
 		// TODO Auto-generated method stub
@@ -162,8 +156,9 @@ class InnerPanel extends JPanel{
 	public void paintPathUnit(PathUnit pathUnit) {
 		Path path = new Path();
 		path.getPathUnitList().add(pathUnit);
-		pathList.clear();
-		pathList.add(path);
+		ArrayList<Path> pathListTemp = new ArrayList<Path>();
+		pathListTemp.add(path);
+		this.pathList = pathListTemp;
 		repaint();
 	}
 }

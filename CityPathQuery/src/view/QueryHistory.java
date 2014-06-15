@@ -39,12 +39,7 @@ import models.mapItems.Path;
 import models.query.Advice;
 
 
-
-
-
-
 import java.util.ArrayList;
-
 
 
 public class QueryHistory extends JFrame {
@@ -52,7 +47,7 @@ public class QueryHistory extends JFrame {
 	private JPanel contentPane;
 	private InfoPanel infoTextArea; //显示当前选中路径信息
 	private JList list;
-	private ArrayList<models.query.Query> queryList = Client.getQueriesListByUserName("djf");
+	private ArrayList<models.query.Query> queryList = Client.getQueriesListByUserName(Client.getUser().getUserName());
 	private javax.swing.DefaultListModel<String> model;
 //	private ArrayList<Advice> AdviceList;
 	MapPanel mapPanel;
@@ -82,6 +77,7 @@ public class QueryHistory extends JFrame {
 	 */
 	public QueryHistory() {
 		
+		this.setTitle("个人历史记录查询");
 		/*
 		 * just for test
 		 */
@@ -116,8 +112,8 @@ public class QueryHistory extends JFrame {
 		JPanel panel_3 = new JPanel();
 		panel.add(panel_3, BorderLayout.SOUTH);
 		
-		JLabel lblNewLabel = new JLabel("1 \u72B6\u6001\uFF1A\u5DF2\u767B\u5F55   \u7528\u6237\u540D\uFF1Aaaa  ");
-		lblNewLabel.setFont(new Font("锟斤拷锟斤拷", Font.BOLD, 15));
+		JLabel lblNewLabel = new JLabel("状态：已登录    用户名：" + Client.getUser().getUserName());
+		lblNewLabel.setFont(new Font("宋体", Font.BOLD, 15));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		panel.add(lblNewLabel, BorderLayout.EAST);
 		
@@ -125,8 +121,8 @@ public class QueryHistory extends JFrame {
 		panel.add(panel_4, BorderLayout.CENTER);
 		panel_4.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 		
-		JLabel label_5 = new JLabel(" 2  \u67E5\u8BE2\u5386\u53F2\u8BB0\u5F55");
-		label_5.setFont(new Font("锟斤拷锟斤拷", Font.BOLD, 16));
+		JLabel label_5 = new JLabel("查询历史记录");
+		label_5.setFont(new Font("宋体", Font.BOLD, 16));
 		panel_4.add(label_5);
 		
 		JPanel panel_5 = new JPanel();
@@ -149,7 +145,7 @@ public class QueryHistory extends JFrame {
 		panel_5.add(panel_9, BorderLayout.SOUTH);
 		panel_9.setLayout(new FlowLayout(FlowLayout.CENTER, 60, 10));
 		
-		JButton button = new JButton("鍒犻櫎");
+		JButton button = new JButton("删除");
 		button.setFont(new Font("Dialog", Font.BOLD, 14));
 		
         button.addActionListener(new java.awt.event.ActionListener() {
@@ -159,7 +155,7 @@ public class QueryHistory extends JFrame {
         });
         panel_9.add(button);
         
-		JButton button_2 = new JButton("璇勪环");
+		JButton button_2 = new JButton("评价");
 		button_2.setFont(new Font("Dialog", Font.BOLD, 14));
         button_2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -218,8 +214,17 @@ public class QueryHistory extends JFrame {
 		mapPanel = new MapPanel(map);
 		contentPane.add(mapPanel, BorderLayout.CENTER);
 		
+		
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	//	list.setSelectedIndex(0);
 
+	}
+	
+	/**
+	 * 关闭本窗口
+	 */
+	public void closeFrame() {
+		this.setVisible(false);
 	}
 	
 	/*
@@ -247,8 +252,14 @@ public class QueryHistory extends JFrame {
 		 * ActionEvent for button 
 		 */
 	    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                                  
-	        // TODO add your handling code here: 
-	    	dispose();
+	        // TODO add your handling code here:
+	    	int m = JOptionPane.showConfirmDialog(null, "您确定要退出历史查看吗？", "消息", JOptionPane.YES_NO_OPTION);
+			if(m == JOptionPane.YES_OPTION) {	
+				//Client.sendLoginCancleMsg();
+				//Client.closeConnection();	
+				dispose();					// 关闭登录窗口
+			}
+	    	
 	    }  
 	    
 		
@@ -298,7 +309,8 @@ public class QueryHistory extends JFrame {
 	    	private JList list;
 	    	private javax.swing.DefaultListModel<String> model;
 	    	JTextArea textArea_1;
-	    	JTextArea textArea;
+	    	//JTextArea textArea;
+	    	MapPanel mapPanel;
 	    	JButton btnNewButton_2;
 	    	int grade = -1;
 	    	/**
@@ -327,12 +339,19 @@ public class QueryHistory extends JFrame {
 	    	 * Create the frame.
 	    	 */
 	    	public Comment() {
-	    		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    		
+	    		
+	    		
+	    		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	    		setBounds(100, 100, 660, 520);
 	    		contentPane = new JPanel();
 	    		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 	    		setContentPane(contentPane);
 	    		contentPane.setLayout(new BorderLayout(0, 0));
+	    		
+	    		mapPanel = new MapPanel(Client.getMap());
+	    		contentPane.add(mapPanel, BorderLayout.CENTER);
+	    		
 	    		
 	    		JPanel panel = new JPanel();
 	    		panel.setPreferredSize(new Dimension(0,50));
@@ -498,8 +517,9 @@ public class QueryHistory extends JFrame {
 	    		JPanel panel_14 = new JPanel();
 	    		contentPane.add(panel_14, BorderLayout.EAST);
 	    		
-	    		textArea = new JTextArea();
-	    		contentPane.add(textArea, BorderLayout.CENTER);
+	    		//textArea = new JTextArea();
+	    		//contentPane.add(textArea, BorderLayout.CENTER);
+	    		
 	    	}
 	    	
 	    	
@@ -543,23 +563,17 @@ public class QueryHistory extends JFrame {
 	    	 */
 	    	private void  buttonActionPerformed(java.awt.event.ActionEvent evt) {                                         
 	            // TODO add your handling code here:
+	    		//提示用户是否确定提交
+	    		int m = JOptionPane.showConfirmDialog(null, "您确定要提交评论吗？", "消息", JOptionPane.YES_NO_OPTION);
+				if(m == JOptionPane.NO_OPTION) {
+					return;
+				}
+	    		
+	    		
 	            int idx = list.getSelectedIndex();
 	            ArrayList<Path> pathList = query.getResultPath();
 	            
-	            String adviceText = textArea_1.getText().trim();
-	            
-	            if (pathList.size() == 1) {
-	            	Path path = pathList.get(0);
-	            	if (idx == 0) {
-	            		System.out.println(grade);
-	            		System.out.println(adviceText);
-	            		
-	            	}
-	            	else {
-	            		System.out.println(grade);
-	            		System.out.println(adviceText);
-	            	}
-	            }
+	            String adviceText = textArea_1.getText().trim();	            
 	            
 	            if (grade <= 0) {
 	            	return;
@@ -625,17 +639,33 @@ public class QueryHistory extends JFrame {
 	            // TODO add your handling code here:
 	              if (!evt.getValueIsAdjusting()) {
 	                    int idx = list.getSelectedIndex();
-	                    grade = -1;
-	                    if(model.getElementAt(idx).startsWith("    ")) {
-	                    	//pathUnit
-	                    	textArea_1.setText(null);
-                    		textArea_1.setEditable(true);
-                    		textArea_1.requestFocus(); 		
-	                    }
-	                    else {
-	                    	//path
-	                    	textArea_1.setEditable(false);
-	                    }
+	                    ArrayList<Path> pathList = query.getResultPath();	    	            
+	    	            String adviceText = textArea_1.getText().trim();
+	                    
+	                    int curIndex = 0;
+	    	            for (int i = 0;i < pathList.size();i ++) {
+	    	            	Path path = pathList.get(i);
+	    	            	if (curIndex == idx) {
+	    	            		textArea_1.setText("");
+	    	            		textArea_1.setEditable(false);
+	    	            		ArrayList<Path> temp = new ArrayList<Path>();
+	    	            		temp.add(path);
+	    	            		mapPanel.paintPath(temp);
+	    	            	}
+	    	            	curIndex ++;
+	    	            	
+	    	            	for (PathUnit pathUnit : path.getPathUnitList()) {
+	    	            		if (curIndex == idx) {
+	    	            			//pathUnit
+	    	                    	textArea_1.setText("");
+	                        		textArea_1.setEditable(true);
+	                        		textArea_1.requestFocus();
+	                        		mapPanel.paintPathUnit(pathUnit);
+	    	            			return;
+	    	            		}
+	    	            		curIndex ++;
+	    	            	}
+	    	            }
 	                    /*
 	                    if (idx >= 0 && idx < AdviceList.size()) {
 	                    	if (AdviceList.get(idx).getContent() == null) {

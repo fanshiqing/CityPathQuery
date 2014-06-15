@@ -12,20 +12,17 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 //import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import client.Client;
-import models.mapItems.AbstractMap;
 import models.mapItems.Map;
-import models.mapItems.Path;
-import util.TranslateMapFile;
+import client.Client;
 
 
 public class Query extends JFrame {
@@ -40,13 +37,19 @@ public class Query extends JFrame {
 	
 	private JButton jbtQuery;		// 查询按钮
 	private JButton jbtReset;		// 重置按钮
-	private JButton jbtExit;		// 退出按钮
-	private JButton jbtAbout;		// 关于按钮
+	//private JButton jbtExit;		// 退出按钮
+	//private JButton jbtAbout;		// 关于按钮
 	
-	private MapPanel mapPanel;	//地图panel
+	private MapPanel mapPanel;		//地图panel
 	
 	private String userName;				// 登录的用户名
-
+	
+	// 帮助菜单项
+	private JMenuItem jmiAbout, jmiViewHelp;
+	// 查询菜单项
+	private JMenuItem jmiQueryHistory, jmiViewPersonInfo; // 评论历史查询
+	
+	private JMenuItem jmiExit;			// 退出系统
 	/**
 	 * Launch the application.
 	 */
@@ -69,7 +72,48 @@ public class Query extends JFrame {
 	public Query(String userName) {
 		super();				// 首先调用父类的构造方法
 		
+		/**
+		 * 设置菜单栏
+		 * @author FanShiqing
+		 */
+		JMenuBar jmb = new JMenuBar();
+		JMenu helpMenu = new JMenu("帮助(H)");
+		JMenu queryMenu = new JMenu("查询(Q)");
+		JMenu exitMenu = new JMenu("退出(E)");
+		
+		helpMenu.setMnemonic('H');
+		queryMenu.setMnemonic('Q');
+		exitMenu.setMnemonic('E');
+		
+		this.setJMenuBar(jmb); 				// 将菜单栏加到面板中
+		
+		jmb.add(queryMenu);
+		jmb.add(helpMenu);
+		jmb.add(exitMenu);
+		// 帮助菜单
+		jmiAbout = new JMenuItem("关于...");
+		jmiViewHelp = new JMenuItem("查看帮助...");
+		jmiQueryHistory = new JMenuItem("评论历史查询(C)...");
+		jmiViewPersonInfo = new JMenuItem("个人信息查询(I)...");
+				
+		jmiExit = new JMenuItem("退出系统...");
+		
+		helpMenu.add(jmiViewHelp);
+		helpMenu.addSeparator();	// 添加分割线
+		helpMenu.add(jmiAbout);
+		queryMenu.add(jmiQueryHistory);
+		queryMenu.addSeparator();
+		queryMenu.add(jmiViewPersonInfo);
+		exitMenu.add(jmiExit);
+		
+		// 添加监听事件
+		jmiAbout.addActionListener(new AboutListener());
+		jmiExit.addActionListener(new ExitListener());
+		jmiQueryHistory.addActionListener(new ViewQueryHistoryListener());
+		
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setTitle("城市路径查询与建议系统");
 		
 		setBounds(100, 100, 660, 520);
 		contentPane = new JPanel();
@@ -101,6 +145,7 @@ public class Query extends JFrame {
 		panel.add(panel_4, BorderLayout.CENTER);
 		panel_4.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
 		
+		/*
 		//JButton button_2 = new JButton("\u767B\u9646");
 		jbtExit= new JButton("退出");
 		jbtExit.setHorizontalAlignment(SwingConstants.CENTER);
@@ -114,6 +159,7 @@ public class Query extends JFrame {
 		jbtAbout.setPreferredSize(new Dimension(60,21));
 		jbtAbout.setFont(new Font("Dialog", Font.BOLD, 12));
 		panel_4.add(jbtAbout);
+		*/
 		
 		JPanel panel_15 = new JPanel();
 		panel_15.setPreferredSize(new Dimension(50,20));
@@ -227,16 +273,16 @@ public class Query extends JFrame {
 		mapPanel = new MapPanel(map);
 		contentPane.add(mapPanel, BorderLayout.CENTER);
 		
-		
 		this.setLocationRelativeTo(null); 					// 设置界面的相对位置
 		
-		/*
-		 * 为各个按钮添加监听事件
-		 */
-		jbtExit.addActionListener(new ExitListener());
-		jbtAbout.addActionListener(new AboutListener());
+		
+		//  为各个按钮添加监听事件
+		//jbtExit.addActionListener(new ExitListener());
+		//jbtAbout.addActionListener(new AboutListener());
 		jbtQuery.addActionListener(new QueryListener());
 		jbtReset.addActionListener(new ResetListener());
+		
+		
 	}
 	
 	/**
@@ -282,6 +328,7 @@ public class Query extends JFrame {
 		}
 	}
 	
+	
 	/**
 	 * 内部类
 	 * 实现点击查询按钮时的行为：向server发出路径查询请求
@@ -326,8 +373,27 @@ public class Query extends JFrame {
 			
 		}
 	}
-	
-	
+	/**
+	 * 内部类
+	 * 实现点击[评论历史查询]菜单项的功能
+	 * @author lenovo
+	 *
+	 */
+	private class ViewQueryHistoryListener implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			EventQueue.invokeLater(new Runnable() {
+				public void run() {
+					try {
+						QueryHistory frame = new QueryHistory();
+						frame.setLocationRelativeTo(null);
+						frame.setVisible(true);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}
+	}
 	private void printPathInfo() {
 		
 	}

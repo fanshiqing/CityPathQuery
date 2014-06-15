@@ -615,7 +615,8 @@ public class Client implements CommProtocol{
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		if(Client.insertNewTextComment("fsq", 4, "this is my test comment!"))
+		
+		if(Client.insertNewTextComment("fsq", 4, "¸ß´ó¸ç!"))
 			System.out.println("add new comment successfully!");
 		/*
 		ArrayList<Query> result = Client.getQueriesListByUserName("fsq");
