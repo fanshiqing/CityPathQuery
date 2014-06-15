@@ -2,17 +2,72 @@ package view;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.AdjustmentEvent;
+import java.awt.event.AdjustmentListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import models.mapItems.Location;
 import models.mapItems.Map;
 import models.mapItems.Path;
 import models.mapItems.PathUnit;
+
+
+public class MapPanel extends JScrollPane {
+	private InnerPanel innerPanel;
+
+	
+	public MapPanel(Map map) {
+		super();
+		innerPanel = new InnerPanel(map);
+		setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		
+		getViewport().addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				// TODO Auto-generated method stub
+				repaint();
+				innerPanel.repaint();
+			}
+		});
+		
+		setViewportView(innerPanel);
+	}
+	
+	public void paintPath(ArrayList<Path> pathList) {
+		repaint();
+		innerPanel.paintPath(pathList);
+	}
+
+	@Override
+	protected void paintComponent(Graphics arg0) {
+		// TODO Auto-generated method stub
+		super.paintComponent(arg0);
+	}
+	
+}
+
 
 /**
  * 绘制Map的Panel,其构造参数需要传入Map
@@ -20,19 +75,20 @@ import models.mapItems.PathUnit;
  * @author Jeff
  *
  */
-public class MapPanel extends JPanel{
+class InnerPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
 	
 	private Map map;
 	
-	private Path currentPath;
+	private ArrayList<Path> pathList;
 	
-	public MapPanel(Map map) {
+	public InnerPanel(Map map) {
 		this.map = map;
-		currentPath = new Path();
+		pathList = new ArrayList<Path>();
+		setPreferredSize(new Dimension(1024, 768));
 	}
 	
-	public MapPanel() {
+	public InnerPanel() {
 		super();
 	}
 
@@ -40,7 +96,7 @@ public class MapPanel extends JPanel{
 	public void paintComponent(Graphics g) {
 		super.paintComponents(g);
 		paintMap(g, map);
-		paintPath(g, currentPath);
+		paintPath(g, pathList);
 		
 	}
 	
@@ -76,26 +132,38 @@ public class MapPanel extends JPanel{
 		}
 	}
 	
-	private void paintPath(Graphics g, Path path) {
+	private void paintPath(Graphics g, ArrayList<Path> pathList) {
 		// Graphics g = getGraphics();
-		ArrayList<PathUnit> pathUnits = path.getPathUnitList();
-		Color originColor = g.getColor();
+		for (Path p : pathList) {
+			ArrayList<PathUnit> pathUnits = p.getPathUnitList();
+			Color originColor = g.getColor();
 
-		// test
-		/*for (PathUnit p : pathUnits) {
-			System.out.println("start point : " + p.getStartPoint().getX()
-					+ "  " + p.getStartPoint().getY() + "  "
-					+ p.getEndPoint().getX() + "  " + p.getEndPoint().getY());
-		}*/
+			// test
+			/*for (PathUnit p : pathUnits) {
+				System.out.println("start point : " + p.getStartPoint().getX()
+						+ "  " + p.getStartPoint().getY() + "  "
+						+ p.getEndPoint().getX() + "  " + p.getEndPoint().getY());
+			}*/
 
-		g.setColor(Color.red);
-		paintPathUnits(g, pathUnits);
-		g.setColor(originColor);
+			g.setColor(Color.red);
+			paintPathUnits(g, pathUnits);
+			g.setColor(originColor);
+		}
+		
 	}
 	 
-	public void paintPath(Path path) {
-		currentPath = path;
+	public void paintPath(ArrayList<Path> pathList) {
+		if (pathList != null) {
+			this.pathList = pathList;
+			repaint();
+		}
+	}
+	
+	public void paintPathUnit(PathUnit pathUnit) {
+		Path path = new Path();
+		path.getPathUnitList().add(pathUnit);
+		pathList.clear();
+		pathList.add(path);
 		repaint();
 	}
-	 
 }

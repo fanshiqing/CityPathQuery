@@ -19,7 +19,10 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
+import client.Client;
+import models.mapItems.AbstractMap;
 import models.mapItems.Map;
+import models.mapItems.Path;
 import util.TranslateMapFile;
 
 
@@ -37,6 +40,8 @@ public class Query extends JFrame {
 	private JButton jbtReset;		// 重置按钮
 	private JButton jbtExit;		// 退出按钮
 	private JButton jbtAbout;		// 关于按钮
+	
+	private MapPanel mapPanel;	//地图panel
 	
 	private String userName;				// 登录的用户名
 
@@ -215,18 +220,10 @@ public class Query extends JFrame {
 		JPanel panel_14 = new JPanel();
 		contentPane.add(panel_14, BorderLayout.EAST);
 		
-//		JTextArea textArea = new JTextArea();
-//		contentPane.add(textArea, BorderLayout.CENTER);
-		Map map = TranslateMapFile.translateMap();
-		MapPanel mapPanel = new MapPanel(map);
-		mapPanel.setSize(1024, 768);
-		JScrollPane temp = new JScrollPane();
-		temp.setViewportView(mapPanel);
-		temp.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		temp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		//contentPane.add(mapPanel, BorderLayout.CENTER);
-		contentPane.add(temp, BorderLayout.CENTER);
+		Map map = Client.getMap();
+		mapPanel = new MapPanel(map);
+		contentPane.add(mapPanel, BorderLayout.CENTER);
 		
 		
 		this.setLocationRelativeTo(null); 					// 设置界面的相对位置
@@ -287,6 +284,24 @@ public class Query extends JFrame {
 	 */
 	private class QueryListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			//Query
+			String locNameStart = textField_1.getText();
+			String locNameEnd = textField_2.getText();
+			String locNameMid = textField_3.getText();
+			//AbstractMap absMap = Client.getAbstractMap();
+			
+			//Client.clientInit("user");
+			
+			
+			models.query.Query query = new models.query.Query(locNameStart, locNameMid, locNameEnd, Client.getUser().getUserName());
+			if (!query.execute()) {
+				JOptionPane.showMessageDialog(null, "输入地点不合法！");
+			}
+			else {
+				//向服务器发送历史数据
+				
+				mapPanel.paintPath(query.getResultPath());
+			}
 			
 		}
 	}

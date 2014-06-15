@@ -13,9 +13,11 @@ import java.util.PriorityQueue;
  *
  */
 public class AbstractMap {
+	private Map map;
 	private ArrayList<CrossPoint> crossPoints; //crosspoint±í
 	
 	public AbstractMap(Map map) {
+		this.map = map;
 		ArrayList<PathUnit> pathUnitList = map.getPathUnitList();
 		crossPoints = new ArrayList<CrossPoint>();
 		for (PathUnit p : pathUnitList) {
@@ -223,6 +225,15 @@ public class AbstractMap {
 	 */
 	public Path findPath(Location loc1, Location loc2) {
 		return findPath(loc1.getRoadEntry(), loc2.getRoadEntry());
+	}
+	
+	public Path findPath(String locName1, String locName2) {
+		Location loc1 = map.getLocationByName(locName1);
+		Location loc2 = map.getLocationByName(locName2);
+		if (loc1 == null || loc2 == null) {
+			return null;
+		}
+		return findPath(loc1, loc2);
 	}
 	
 }

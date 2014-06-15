@@ -178,6 +178,8 @@ public class Login {
 	 * 
 	 */
 	private void landOn() {
+		Client.clientInit(userName);
+		
 		Query queryFrame = new Query(this.userName);
 		queryFrame.setVisible(true);				// 设置查询窗口可见
 		

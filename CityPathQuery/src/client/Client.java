@@ -9,6 +9,7 @@ import javax.swing.JOptionPane;
 
 import models.mapItems.AbstractMap;
 import models.mapItems.Map;
+import util.TranslateMapFile;
 import util.User;
 
 /**
@@ -26,15 +27,44 @@ public class Client implements CommProtocol{
 	private static Client client;
 	private static User user;
 	private static Map map;
-	private static AbstractMap absMap;
+	private static AbstractMap abstractMap;
+	
+	public static void clientInit(String userName) {
+		map = TranslateMapFile.translateMap();
+		abstractMap = new AbstractMap(map);
+		user = new User(userName, null, null, null);
+	}
+	
+	public static User getUser() {
+		if (user == null) {
+			user = new User("default", null, null, null);
+		}
+		return user;
+	}
+	
+	/*public static void setUser(User arg) {
+		user = arg;
+	}*/
+	
+	public static Map getMap() {
+		if (map == null) {
+			map = TranslateMapFile.translateMap();
+			abstractMap = new AbstractMap(map);
+		}
+		return map;
+	}
+	
+	public static AbstractMap getAbstractMap() {
+		if (abstractMap == null) {
+			map = TranslateMapFile.translateMap();
+			abstractMap = new AbstractMap(map);
+		}
+		return abstractMap;
+	}
 	
 	
 	static {
 		client = new Client();
-	}
-	
-	public static void initialize() {
-		
 	}
 	
 	/**
@@ -63,8 +93,6 @@ public class Client implements CommProtocol{
 		// Connect to server successfully
 		System.out.println("Connect to server successfully!\n");
 	}
-	
-	
 	
 	/**
 	 * 获取向server发送对象的输出流对象
@@ -126,7 +154,7 @@ public class Client implements CommProtocol{
 			 * 通信协议说明：client首先向server发送通信消息类型，
 			 * 			     再依次发送用户名，密码
 			 */
-			toServer.writeObject(String.valueOf(COMM_TYPE_LOGIN));	// 将int转换成String类型再发送
+			toServer.writeObject(String.valueOf(LOGIN_REQUEST));	// 将int转换成String类型再发送
 			toServer.writeObject(userName);							// 发送用户名
 			toServer.writeObject(password);							// 发送密码
 		}

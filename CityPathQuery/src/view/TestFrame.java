@@ -33,7 +33,7 @@ public class TestFrame extends JFrame {
 		absMap = new AbstractMap(map);
 	}
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		TestFrame frame = new TestFrame();
 		frame.setTitle("Map");
 		//frame.setLocationRelativeTo(null);
@@ -45,6 +45,6 @@ public class TestFrame extends JFrame {
 		//Coordinate endCoor = new Coordinate(500, 520);
 		Path path = frame.absMap.findPath(frame.map.getLocationByName(" ≥Ã√"), frame.map.getLocationByName("–£ ∑π›"));
 		frame.mapPanel.paintPath(path);
-	}
+	}*/
 }
 	
