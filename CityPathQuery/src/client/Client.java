@@ -84,7 +84,7 @@ public class Client implements CommProtocol{
 	 */
 	public Client() {
 		try {
-			socket = new Socket("172.26.18.105", 8000);		// 创建连接到server的套接字
+			socket = new Socket("localhost", 8000);		// 创建连接到server的套接字
 			toServer = new ObjectOutputStream(socket.getOutputStream());
 			//toServer.flush();
 			fromServer = new ObjectInputStream(socket.getInputStream());

@@ -1,45 +1,30 @@
 package view;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
-import java.awt.Graphics;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.SwingConstants;
-
-import java.awt.Font;
-
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JTextArea;
-
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.io.File;
 //import java.nio.file.Path;
-
-
-
-
-import javax.swing.JList;
-
-import client.Client;
-import models.connection.ModelUpdate;
-import models.mapItems.Map;
-import models.mapItems.PathUnit;
-import models.mapItems.Path;
-import models.query.Advice;
-
-
 import java.util.ArrayList;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+
+import models.mapItems.Map;
+import models.mapItems.Path;
+import models.mapItems.PathUnit;
+import client.Client;
 
 
 public class QueryHistory extends JFrame {
@@ -197,6 +182,8 @@ public class QueryHistory extends JFrame {
 	
 		
 		list = new javax.swing.JList(model);
+		JScrollPane jspTemp = new JScrollPane();
+		jspTemp.add(list);
 		panel_10.add(list, BorderLayout.CENTER);
         list.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         list.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
